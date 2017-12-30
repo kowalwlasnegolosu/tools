@@ -1,0 +1,115 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
+
+<dom-module id="four-percent-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .card-wrapper {
+        padding-bottom: 20px;
+        width: 600px;
+      }
+
+      .comment {
+        font-size: 14px;
+        font-style: italic;
+      }
+
+      .input-wrapper {
+        margin: 0 20px;
+        width: calc(50% - 43px);
+        display: inline-block;
+      }
+
+      .title {
+        font-family: 'Caveat', cursive;
+        text-align: center;
+      }
+
+      .instructions {
+        color: #FB8C00;
+        font-family: 'Caveat', cursive;
+        font-size: 20px;
+        margin: 0 20px;
+        width: calc(50% - 43px);
+        display: inline-block;
+      }
+
+      .instructions-wrapper {
+        margin: 0 20px;
+        text-align: center;
+      }
+    </style>
+
+    <paper-card class="card-wrapper">
+      <h2 class="title">Reguła 4 procent - kalkulator.</h2>
+      <div class="instructions-wrapper">
+        <div class="instructions"> Ile PLN potrzebujesz miesięcznie? </div>
+        <!-- <div class="instructions"> LUB </div> -->
+        <div class="instructions"> Iile wynosi Twoje portfolio? </div>
+      </div>
+      <div>
+        <div class="input-wrapper">
+          <paper-input type="number" label="Kwota do dyspozycji miesiecznie" value="{{monthly}}">
+            <div slot="suffix">PLN</div>
+          </paper-input>
+          <span class="comment">Rocznie wypłacasz <b>[[getYearlyWithdrawal(monthly)]]</b> PLN</span>
+        </div>
+        <div class="input-wrapper">
+          <paper-input type="number" label="Wartość portfolio" value="{{totalAssets}}">
+            <div slot="suffix">PLN</div>
+          </paper-input>
+          <span class="comment">Tyle PLN potrzebujesz zgromadzić</span>
+        </div>
+      </div>
+    </paper-card>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class FourPercentApp extends Polymer.Element {
+      static get is() {
+        return 'four-percent-app';
+      }
+      static get properties() {
+        return {
+          monthly: {
+            type: String, // Polymer doesn't support binding with number.
+            value: 5000,
+            observer: 'monthlyChanged'
+          },
+          totalAssets: {
+            type: Number,
+            observer: 'totalAssetsChanged'
+          },
+          tax: {
+            type: Number,
+            value: 19
+          }
+        };
+      }
+
+      monthlyChanged() {
+        this.totalAssets = Math.round(this.monthly * 25 * 12);
+      }
+
+      totalAssetsChanged() {
+        this.monthly = Math.round(this.totalAssets / (25 * 12));
+      }
+
+      getYearlyWithdrawal(monthly) {
+        return monthly * 12;
+      }
+    }
+
+    window.customElements.define(FourPercentApp.is, FourPercentApp);
+  </script>
+</dom-module>
