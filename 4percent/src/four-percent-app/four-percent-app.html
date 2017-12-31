@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
 
@@ -10,20 +9,13 @@
         display: block;
       }
 
-      .card-wrapper {
-        padding-bottom: 20px;
-        width: 600px;
-      }
-
       .comment {
         font-size: 14px;
         font-style: italic;
       }
 
       .input-wrapper {
-        margin: 0 20px;
-        width: calc(50% - 43px);
-        display: inline-block;
+        margin: 20px 20px;
       }
 
       .title {
@@ -36,38 +28,28 @@
         font-family: 'Caveat', cursive;
         font-size: 20px;
         margin: 0 20px;
-        width: calc(50% - 43px);
-        display: inline-block;
       }
 
-      .instructions-wrapper {
-        margin: 0 20px;
-        text-align: center;
+      .total-assets {
+        font-weight: bold;
+        font-size: 45px;
+        font-family: 'Caveat', cursive;
       }
     </style>
 
-    <paper-card class="card-wrapper">
-      <h2 class="title">Reguła 4 procent - kalkulator.</h2>
-      <div class="instructions-wrapper">
-        <div class="instructions"> Ile PLN potrzebujesz miesięcznie? </div>
-        <!-- <div class="instructions"> LUB </div> -->
-        <div class="instructions"> Iile wynosi Twoje portfolio? </div>
+    <h2 class="title">Reguła 4 procent - kalkulator.</h2>
+      <div class="instructions"> Ile PLN potrzebujesz miesięcznie? </div>
+      <div class="input-wrapper">
+        <paper-input type="number" step="100" label="Kwota do dyspozycji miesięcznie" value="{{monthly}}">
+          <div slot="suffix">PLN</div>
+        </paper-input>
+        <div class="comment">(Rocznie wypłacasz <b>[[getYearlyWithdrawal(monthly)]]</b> PLN)</div>
       </div>
-      <div>
-        <div class="input-wrapper">
-          <paper-input type="number" label="Kwota do dyspozycji miesięcznie" value="{{monthly}}">
-            <div slot="suffix">PLN</div>
-          </paper-input>
-          <span class="comment">Rocznie wypłacasz <b>[[getYearlyWithdrawal(monthly)]]</b> PLN</span>
-        </div>
-        <div class="input-wrapper">
-          <paper-input type="number" label="Wartość portfolio" value="{{totalAssets}}">
-            <div slot="suffix">PLN</div>
-          </paper-input>
-          <span class="comment">Tyle PLN potrzebujesz zgromadzić</span>
-        </div>
+
+      <div class="instructions">Stosując regułę 4%, twoje portfolio powinno wynosić: </div>
+      <div class="input-wrapper">
+        <div class="total-assets">{{totalAssets}} PLN</div>
       </div>
-    </paper-card>
   </template>
 
   <script>
@@ -79,6 +61,7 @@
       static get is() {
         return 'four-percent-app';
       }
+
       static get properties() {
         return {
           monthly: {
@@ -87,26 +70,25 @@
             observer: 'monthlyChanged'
           },
           totalAssets: {
-            type: Number,
-            observer: 'totalAssetsChanged'
-          },
-          tax: {
-            type: Number,
-            value: 19
+            type: String
           }
         };
       }
 
       monthlyChanged() {
-        this.totalAssets = Math.round(this.monthly * 25 * 12);
+        this.totalAssets = this.toCurrencyFormat(this.monthly * 25 * 12);
       }
 
-      totalAssetsChanged() {
-        this.monthly = Math.round(this.totalAssets / (25 * 12));
-      }
+
 
       getYearlyWithdrawal(monthly) {
-        return monthly * 12;
+        return this.toCurrencyFormat(monthly * 12);
+      }
+
+      toCurrencyFormat(amount) {
+        return amount.toFixed(2).replace(/./g, function(c, i, a) {
+          return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c;
+        });
       }
     }
 
