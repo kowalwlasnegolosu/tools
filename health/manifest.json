@@ -1,0 +1,6 @@
+{
+  "name": "health",
+  "short_name": "health",
+  "start_url": "/",
+  "display": "standalone"
+}

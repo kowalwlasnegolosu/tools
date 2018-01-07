@@ -1,0 +1,108 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+
+<dom-module id="health-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .label {
+        height: 100px;
+        line-height: 100px;
+        text-align: center;
+      }
+
+      .line {
+        font-style: bold;
+        width: 120px;
+      }
+
+      .slider-wrapper {
+        width: calc(100% - 220px);
+      }
+
+      .title {
+        text-align: center;
+      }
+
+      .warning {
+        display: none;
+        text-align: center;
+        background-color: #ffffb0;
+        padding: 4px;
+      }
+
+      .wrapper {
+        display: flex;
+        flex-flow: row;
+        height: 100px;
+      }
+
+      #slider {
+        --paper-slider-knob-start-color: #ffcc80;
+        --paper-slider-pin-color: #ffcc80;
+        --paper-slider-knob-color: #ffcc80;
+        --paper-slider-active-color: #ffcc80;
+        --paper-slider-secondary-color: #ca9b52;
+        height: 100px;
+        width: 100%;
+      }
+    </style>
+    <h2 class="title">Sport vs Dieta - suwak.</h2>
+    <div class="wrapper">
+      <div class="label line" style="font-size: [[sportVal]]px; opacity: [[sportOpacity]]">Sport</div>
+      <div class="slider-wrapper line">
+        <paper-slider id="slider" pin="" value="{{value}}" secondary-progress="100"></paper-slider>
+      </div>
+      <div class="label line" style="font-size: [[dietVal]]px; opacity: [[dietOpacity]]">Dieta</div>
+    </div>
+    <div id="dietWarning" class="warning">UWAGA: Przygotuj się na liczenie zawartości cukru w cukrze. Duże ryzyko porażki.</div>
+    <div id="sportWarning" class="warning">UWAGA: Siłowania codziennie. Bieganie codziennie. Duże ryzyko porażki.</div>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class HealthApp extends Polymer.Element {
+      static get is() {
+        return 'health-app';
+      }
+      static get properties() {
+        return {
+          value: {
+            type: Number,
+            value: 50,
+            observer: 'valueChanged'
+          },
+          sportVal: {
+            type: Number
+          },
+          sportOpacity: {
+            type: Number
+          },
+          dietVal: {
+            type: Number
+          },
+          dietOpacity: {
+            type: Number
+          }
+        };
+      }
+
+      valueChanged(value) {
+        this.dietVal = value / 3 + 20;
+        this.dietOpacity = value / 100 + 0.1;
+        this.$.dietWarning.style.display = value > 90 ? 'block' : '';
+        this.$.sportWarning.style.display = value < 10 ? 'block' : '';
+        this.sportVal = (100 - value) / 3 + 20
+        this.sportOpacity = (100 - value) / 100 + 0.1;
+      }
+    }
+
+    window.customElements.define(HealthApp.is, HealthApp);
+  </script>
+</dom-module>
